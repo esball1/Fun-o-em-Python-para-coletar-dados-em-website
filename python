@@ -1,0 +1,30 @@
+import requests
+from bs4 import BeautifulSoup
+import json
+
+class Horarios:
+    def coletar_dados(self):
+        try:
+            resposta = requests.get('URL_DO_WEBSITE_X')
+            if resposta.status_code == 200:
+                soup = BeautifulSoup(resposta.content, 'html.parser')
+                dados = soup.select('table tbody td')
+
+                payload = {'sys': 'VALOR_RETORNADO_POST', 'zone': 'VALOR_ZONA', 'button': 'VALOR_BOTAO'}
+                resposta_post = requests.post('URL_DO_WEBSITE_X/handle.php', data=payload)
+                if resposta_post.status_code == 200:
+                    horarios = [dado.get_text() for dado in dados]
+                    return json.dumps({'Horarios': horarios})
+                else:
+                    return False
+            else:
+                return False
+        except Exception as e:
+            print(f'Erro: {e}')
+            return False
+
+horarios = Horarios()
+resultado = horarios.coletar_dados()
+print(resultado)
+
+# Lembre-se de substituir 'URL_DO_WEBSITE_X', 'VALOR_RETORNADO_POST', 'VALOR_ZONA', e 'VALOR_BOTAO' 
